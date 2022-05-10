@@ -1,0 +1,7 @@
+<library path="lib/libswing_recovery">
+  <class name="swing_recovery/SwingRecovery" type="swing_recovery::SwingRecovery" base_class_type="mbf_costmap_core::CostmapRecovery">
+    <description>
+      A recovery behavior that performs an in-place swinging to attempt to see a way out.
+    </description>
+  </class>
+</library>

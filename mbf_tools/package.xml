@@ -15,6 +15,7 @@
   <exec_depend>mbf_demo_controller</exec_depend>
   <exec_depend>mbf_moveback_recovery</exec_depend>
   <exec_depend>move_base_flex</exec_depend>
+  <exec_depend>swing_recovery</exec_depend>
 
   <export>
     <metapackage/>
