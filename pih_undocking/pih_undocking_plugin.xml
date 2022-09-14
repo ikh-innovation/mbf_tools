@@ -1,0 +1,7 @@
+<library path="lib/libpih_undocking">
+  <class name="pih_undocking/PIHUndocking" type="pih_undocking::PIHUndocking" base_class_type="mbf_costmap_core::CostmapRecovery">
+    <description>
+      A peg-out-of-hole controller for Aristos final docking phase wrapped in a mbf recovery behavior
+    </description>
+  </class>
+</library>
