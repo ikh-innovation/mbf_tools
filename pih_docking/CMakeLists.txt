@@ -10,6 +10,7 @@ find_package(catkin REQUIRED
   std_msgs
   mbf_costmap_core
   pluginlib
+  ikh_ros_msgs
 )
 
 include_directories(
@@ -19,7 +20,7 @@ include_directories(
 
 catkin_package(
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp pluginlib mbf_msgs mbf_costmap_core tf2_ros
+  CATKIN_DEPENDS roscpp pluginlib mbf_msgs mbf_costmap_core tf2_ros ikh_ros_msgs
 )
 
 add_library(${PROJECT_NAME} src/pih_docking.cpp)
