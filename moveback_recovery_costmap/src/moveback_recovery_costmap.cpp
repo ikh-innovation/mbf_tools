@@ -46,6 +46,7 @@ gm::Pose2D MoveBackRecoveryCostmap::getCurrentRobotPose() const
 
 uint32_t MoveBackRecoveryCostmap::moveBack() const
 {
+    nh_.setParam("ui/ui_guard", false);
     unsigned int mx, my;
 
     gm::Twist twist;
@@ -73,6 +74,7 @@ uint32_t MoveBackRecoveryCostmap::moveBack() const
         }
 
         if (canceled_) {
+            nh_.setParam("ui/ui_guard", true);
             return mbf_msgs::ExePathResult::CANCELED;
         }
 
@@ -85,6 +87,7 @@ uint32_t MoveBackRecoveryCostmap::moveBack() const
         if (cost-prev_cost>0 && cost>occupied_ths_crv)
         {
             ROS_ERROR("REJECTING BACKWARDS MOTION");
+            nh_.setParam("ui/ui_guard", true);
             return mbf_msgs::ExePathResult::SUCCESS;
         }
         prev_cost = cost;
@@ -93,6 +96,7 @@ uint32_t MoveBackRecoveryCostmap::moveBack() const
         ros::spinOnce();
         r.sleep();
     }
+    nh_.setParam("ui/ui_guard", true);
     return mbf_msgs::ExePathResult::SUCCESS;
 }
 
