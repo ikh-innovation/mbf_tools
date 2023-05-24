@@ -1,0 +1,7 @@
+<library path="lib/libwait_in_place_recovery">
+  <class name="wait_in_place_recovery/WaitRecovery" type="wait_in_place_recovery::WaitRecovery" base_class_type="mbf_costmap_core::CostmapRecovery">
+    <description>
+      Waits until something happens
+    </description>
+  </class>
+</library>
