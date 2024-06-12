@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>mbf_exposed_services</name>
+  <version>0.0.0</version>
+  <description>mbf_exposed_services package exposes the functionality of mbf services as a library for direct usage from packages that have direct access to a costmap</description>
+
+  <maintainer email="ka_ikh@todo.todo">ka_ikh</maintainer>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
+
+  <depend>costmap_2d</depend>
+  <depend>mbf_costmap_core</depend>
+  <depend>mbf_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>mbf_abstract_nav</depend>
+  <depend>mbf_utility</depend>
+  <depend>mbf_costmap_nav</depend>
+            
+</package>
