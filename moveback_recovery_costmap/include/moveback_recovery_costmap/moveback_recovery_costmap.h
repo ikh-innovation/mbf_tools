@@ -5,6 +5,8 @@
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Twist.h>
 #include <tf2_ros/buffer.h>
+#include <mbf_msgs/CheckPose.h>
+#include <mbf_exposed_services/check_pose.h>
 
 namespace gm=geometry_msgs;
 namespace cmap=costmap_2d;
@@ -48,7 +50,8 @@ public:
 
     private:
     gm::Pose2D getCurrentRobotPose() const;
-    uint32_t moveBack() const;
+    geometry_msgs::PoseStamped getTransposedRobotPose(double distance) const;
+    uint32_t moveBack();
     uint32_t publishStop() const;
     double getCurrentDiff(const gm::Pose2D referencePose) const;
 
@@ -68,6 +71,14 @@ public:
     std::string occupied_ths_param_;
     double occupied_ths_;
     double occupied_ths_crv;
+
+    //mbf check_pose_cost 
+    mbf_msgs::CheckPose check_pose_srv;
+    mbf_msgs::CheckPose::Response check_pose_res_prev;
+    mbf_exposed_services::CheckPose check_pose;
+    double mvback_safety_dist; 
+    double backwards_transpose_dist;
+    bool enable_check_pose;
 
 };
 
