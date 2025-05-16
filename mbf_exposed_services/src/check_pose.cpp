@@ -86,13 +86,13 @@ bool CheckPose::check_pose_cost_from_costmap_and_footprint(costmap_2d::Costmap2D
 }
 
 bool CheckPose::check_pose_cost(costmap_2d::Costmap2DROS* costmap, mbf_msgs::CheckPose::Request& request,
-                                mbf_msgs::CheckPose::Response& response)
+                                mbf_msgs::CheckPose::Response& response, bool use_unpadded_robot_footprint)
 {
   // ensure costmap is active so cost reflects latest sensor readings
   // costmap->checkActivate();
 
-  // pad raw footprint to the requested safety distance; note that we discard footprint_padding parameter effect
-  std::vector<geometry_msgs::Point> footprint = costmap->getUnpaddedRobotFootprint();
+  std::vector<geometry_msgs::Point> footprint;
+  footprint = use_unpadded_robot_footprint ? costmap->getUnpaddedRobotFootprint() : costmap->getRobotFootprint();
   auto costmap_2d = costmap->getCostmap();
   return check_pose_cost_from_costmap_and_footprint(costmap_2d, footprint, request, response);
 }
