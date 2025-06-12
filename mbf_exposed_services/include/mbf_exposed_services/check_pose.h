@@ -17,6 +17,6 @@ public:
                                                   mbf_msgs::CheckPose::Request&, mbf_msgs::CheckPose::Response&);
 
   bool check_pose_cost(costmap_2d::Costmap2DROS* costmap, mbf_msgs::CheckPose::Request& request,
-                       mbf_msgs::CheckPose::Response& response);
+                       mbf_msgs::CheckPose::Response& response, bool use_unpadded_robot_footprint = true);
 };
 };  // namespace mbf_exposed_services
