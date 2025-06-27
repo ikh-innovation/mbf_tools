@@ -46,6 +46,12 @@ void MoveBackRecoveryCostmap::initialize(
              "0.8 of CHECKPOSE_MVBACK_LOOKAHEAD value.");
   }
 
+  // dynamic reconfigure
+  config_server = new dynamic_reconfigure::Server<moveback_recovery_costmap::MVBCKCostmapConfig>(private_nh);
+  dynamic_reconfigure::Server<moveback_recovery_costmap::MVBCKCostmapConfig>::CallbackType cb =
+      boost::bind(&MoveBackRecoveryCostmap::reconfigure_callback, this, _1, _2);
+  config_server->setCallback(cb);
+
   initialized_ = true;
 }
 
@@ -272,6 +278,14 @@ uint32_t MoveBackRecoveryCostmap::runBehavior(std::string &message) {
   ROS_INFO("Finished MoveBack-Recovery");
 
   return res;
+}
+
+void MoveBackRecoveryCostmap::reconfigure_callback(moveback_recovery_costmap::MVBCKCostmapConfig& config, uint32_t level)
+{
+  controller_frequency_ = config.controller_frequency;
+  linear_vel_back_ = config.linear_vel;
+  step_back_length_ = config.step_length;
+  step_back_timeout_ = config.step_timeout;
 }
 
 } // namespace moveback_recovery_costmap
