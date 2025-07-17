@@ -117,7 +117,7 @@ uint32_t MoveBackRecovery::runBehavior (std::string& message)
                     initialPose.y, initialPose.theta);
 
     ROS_INFO("attempting step back");
-    moveBack();
+    auto res = moveBack();
     ROS_INFO("complete step back");
 
     double final_diff = getCurrentDiff(initialPose);
@@ -125,6 +125,7 @@ uint32_t MoveBackRecovery::runBehavior (std::string& message)
 
     publishStop();
     ROS_INFO("Finished MoveBack-Recovery");
+    return res;
 }
 
 
