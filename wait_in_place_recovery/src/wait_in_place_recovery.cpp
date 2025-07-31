@@ -68,13 +68,15 @@ uint32_t WaitRecovery::runBehavior (std::string& message)
     //                 initialPose.y, initialPose.theta);
 
     ROS_INFO("Waiting for %f",wait_time_);
-    wait_routine();
+    auto res = wait_routine();
     ROS_INFO("complete waiting.");
 
     // double final_diff = getCurrentDiff(initialPose);
     // ROS_DEBUG("final_diff = %.2f",final_diff);
 
     ROS_INFO("Finished Wait-in-place-Recovery.");
+
+    return res;
 }
 
 

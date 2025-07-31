@@ -10,6 +10,7 @@ find_package(catkin REQUIRED
   mbf_costmap_core
   pluginlib
   mbf_exposed_services
+  dynamic_reconfigure
 )
 
 include_directories(
@@ -17,9 +18,13 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+generate_dynamic_reconfigure_options(
+  cfg/MVBCKCostmap.cfg
+)
+
 catkin_package(
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp pluginlib mbf_msgs mbf_costmap_core tf2_ros mbf_exposed_services
+  CATKIN_DEPENDS roscpp pluginlib mbf_msgs mbf_costmap_core tf2_ros mbf_exposed_services dynamic_reconfigure
 )
 
 add_library(${PROJECT_NAME} src/moveback_recovery_costmap.cpp)
