@@ -147,7 +147,7 @@ uint32_t PIHUndocking::runBehavior (std::string& message)
                     initialPose.y, initialPose.theta);
 
     ROS_INFO("attempting step forward");
-    moveForward();
+    auto res = moveForward();
     ROS_INFO("complete step forward");
 
     double final_diff = getCurrentDiff(initialPose);
@@ -155,6 +155,8 @@ uint32_t PIHUndocking::runBehavior (std::string& message)
 
     publishStop();
     ROS_INFO("Finished moving forward to undock");
+
+    return res;
 }
 
 

@@ -7,6 +7,7 @@
 #include <tf2_ros/buffer.h>
 #include <mbf_msgs/CheckPose.h>
 #include <mbf_exposed_services/check_pose.h>
+#include <moveback_recovery_costmap/MVBCKCostmapConfig.h>
 
 namespace gm=geometry_msgs;
 namespace cmap=costmap_2d;
@@ -48,6 +49,8 @@ public:
 
     virtual ~MoveBackRecoveryCostmap() { };
 
+    void reconfigure_callback(moveback_recovery_costmap::MVBCKCostmapConfig& config, uint32_t level);
+
     private:
     gm::Pose2D getCurrentRobotPose() const;
     geometry_msgs::PoseStamped getTransposedRobotPose(double distance) const;
@@ -79,6 +82,10 @@ public:
     double mvback_safety_dist; 
     double backwards_transpose_dist;
     bool enable_check_pose;
+
+    // dynamic reconfigure
+    dynamic_reconfigure::Server<moveback_recovery_costmap::MVBCKCostmapConfig>* config_server;
+    dynamic_reconfigure::Server<moveback_recovery_costmap::MVBCKCostmapConfig>::CallbackType f;
 
 };
 

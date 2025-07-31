@@ -152,14 +152,18 @@ uint32_t PIHDocking::runBehavior (std::string& message)
                     initialPose.y, initialPose.theta);
 
     ROS_INFO("attempting step back");
-    moveBack();
+    auto res = moveBack();
     ROS_INFO("complete step back");
 
     double final_diff = getCurrentDiff(initialPose);
     ROS_DEBUG("final_diff = %.2f",final_diff);
 
     publishStop();
+    
     ROS_INFO("Finished MoveBack-Recovery");
+
+    return res;
+
 }
 
 
