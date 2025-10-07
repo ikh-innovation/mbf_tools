@@ -1,4 +1,4 @@
-#include <mbf_msgs/ExePathResult.h>
+#include <mbf_msgs/RecoveryResult.h>
 #include <rotate_in_place/rotate_in_place.h>
 #include <pluginlib/class_list_macros.h>
 #include <tf2/utils.h>
@@ -86,7 +86,7 @@ ros::Time init_time = ros::Time::now();
 while (true)
 {
   if (canceled_) {
-      return mbf_msgs::ExePathResult::CANCELED;
+      return mbf_msgs::RecoveryResult::CANCELED;
     }
 
   const gm::Pose2D currPose = getCurrentRobotPose();
@@ -97,14 +97,14 @@ while (true)
   if(abs(error)<tolerance)
   { 
     ROS_INFO("Rotation succeeded. Final error: %f", error);
-    return mbf_msgs::ExePathResult::SUCCESS;
+    return mbf_msgs::RecoveryResult::SUCCESS;
   }
 
   elapsed_time = (time-init_time).toSec();
   if(elapsed_time>timeout)
   {
     ROS_ERROR("Rotation failed. Patience Exceeded. ");
-    return mbf_msgs::ExePathResult::PAT_EXCEEDED;
+    return mbf_msgs::RecoveryResult::PAT_EXCEEDED;
   }  
 
   if (enable_check_pose) {
@@ -120,12 +120,12 @@ while (true)
     if (check_pose_srv.response.state == check_pose_srv.response.LETHAL)
     {
       ROS_ERROR("Rotation failed. Robot in collision. ");
-      return mbf_msgs::ExePathResult::COLLISION;
+      return mbf_msgs::RecoveryResult::IMPASSABLE;
     }
     if (check_pose_srv.response.state == check_pose_srv.response.UNKNOWN || check_pose_srv.response.state == check_pose_srv.response.OUTSIDE)
     {
       ROS_ERROR("Rotation failed. Robot outside or in unknown map. ");
-      return mbf_msgs::ExePathResult::MAP_ERROR;
+      return mbf_msgs::RecoveryResult::TF_ERROR;
     }
 
     // check projected pose safety
@@ -138,12 +138,12 @@ while (true)
     if (check_pose_srv.response.state == check_pose_srv.response.LETHAL)
     {
       ROS_ERROR("Rotation failed. Imminent collision. ");
-      return mbf_msgs::ExePathResult::BLOCKED_PATH;
+      return mbf_msgs::RecoveryResult::IMPASSABLE;
     }
     if (check_pose_srv.response.state == check_pose_srv.response.UNKNOWN || check_pose_srv.response.state == check_pose_srv.response.OUTSIDE)
     {
       ROS_ERROR("Rotation failed. Robot outside or in unknown map. ");
-      return mbf_msgs::ExePathResult::MAP_ERROR;
+      return mbf_msgs::RecoveryResult::TF_ERROR;
     }
   }
 
@@ -163,11 +163,11 @@ uint32_t RotateInPlace::publishStop() const {
   for (double t = 0; t < 1.0; t += 1 / controller_frequency) {
     cmd_vel_pub_.publish(zero_twist_);
     if (canceled_) {
-      return mbf_msgs::ExePathResult::CANCELED;
+      return mbf_msgs::RecoveryResult::CANCELED;
     }
     r.sleep();
   }
-  return mbf_msgs::ExePathResult::SUCCESS;
+  return mbf_msgs::RecoveryResult::SUCCESS;
 }
 
 bool RotateInPlace::cancel() {

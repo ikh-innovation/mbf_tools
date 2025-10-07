@@ -1,7 +1,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <tf2/utils.h>
 #include <wait_in_place_recovery/wait_in_place_recovery.h>
-#include <mbf_msgs/ExePathResult.h>
+#include <mbf_msgs/RecoveryResult.h>
 
 // register as a RecoveryBehavior plugin
 PLUGINLIB_EXPORT_CLASS(wait_in_place_recovery::WaitRecovery, mbf_costmap_core::CostmapRecovery)
@@ -43,10 +43,10 @@ uint32_t WaitRecovery::wait_routine()
         ros::Duration(wait_time_).sleep();
         // TODO: Normally preemption checking should happen in user-defined intervals instead of waiting the whole wait_time_
         // if (canceled_) {
-        //     return mbf_msgs::ExePathResult::CANCELED;
+        //     return mbf_msgs::RecoveryResult::CANCELED;
         // }
     // }
-    return mbf_msgs::ExePathResult::SUCCESS;
+    return mbf_msgs::RecoveryResult::SUCCESS;
 }
 
 bool WaitRecovery::cancel() {
