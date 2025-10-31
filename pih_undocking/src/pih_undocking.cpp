@@ -1,7 +1,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <tf2/utils.h>
 #include <pih_undocking/pih_undocking.h>
-#include <mbf_msgs/ExePathResult.h>
+#include <mbf_msgs/RecoveryResult.h>
 
 // register as a RecoveryBehavior plugin
 PLUGINLIB_EXPORT_CLASS(pih_undocking::PIHUndocking, mbf_costmap_core::CostmapRecovery)
@@ -77,11 +77,11 @@ uint32_t PIHUndocking::moveForward() const
             publishStop();
             ROS_WARN("time out moving forwards");
             ROS_WARN("%.2f [sec] elapsed.", step_frw_timeout_);
-            break;
+            return mbf_msgs::RecoveryResult::PAT_EXCEEDED;
         }
 
         if (canceled_) {
-            return mbf_msgs::ExePathResult::CANCELED;
+            return mbf_msgs::RecoveryResult::CANCELED;
         }
 
         cmd_vel_pub_.publish(twist);
@@ -93,7 +93,7 @@ uint32_t PIHUndocking::moveForward() const
         // if (cost-prev_cost>0 && cost>occupied_ths_crv)
         // {
         //     ROS_ERROR("REJECTING BACKWARDS MOTION");
-        //     return mbf_msgs::ExePathResult::SUCCESS;
+        //     return mbf_msgs::RecoveryResult::SUCCESS;
         // }
         // prev_cost = cost;
         ////////////
@@ -101,7 +101,7 @@ uint32_t PIHUndocking::moveForward() const
         ros::spinOnce();
         r.sleep();
     }
-    return mbf_msgs::ExePathResult::SUCCESS;
+    return mbf_msgs::RecoveryResult::SUCCESS;
 }
 
 uint32_t PIHUndocking::publishStop() const
@@ -111,11 +111,11 @@ uint32_t PIHUndocking::publishStop() const
     {
         cmd_vel_pub_.publish(zero_twist_);
         if (canceled_) {
-            return mbf_msgs::ExePathResult::CANCELED;
+            return mbf_msgs::RecoveryResult::CANCELED;
         }
         r.sleep();
     }
-    return mbf_msgs::ExePathResult::SUCCESS;
+    return mbf_msgs::RecoveryResult::SUCCESS;
 }
 
 double PIHUndocking::getCurrentDiff(const gm::Pose2D referencePose) const

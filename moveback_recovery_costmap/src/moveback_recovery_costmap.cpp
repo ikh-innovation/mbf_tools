@@ -1,4 +1,4 @@
-#include <mbf_msgs/ExePathResult.h>
+#include <mbf_msgs/RecoveryResult.h>
 #include <moveback_recovery_costmap/moveback_recovery_costmap.h>
 #include <pluginlib/class_list_macros.h>
 #include <tf2/utils.h>
@@ -110,11 +110,11 @@ uint32_t MoveBackRecoveryCostmap::moveBack() {
       publishStop();
       ROS_WARN("time out moving backwards");
       ROS_WARN("%.2f [sec] elapsed.", step_back_timeout_);
-      break;
+      return mbf_msgs::RecoveryResult::PAT_EXCEEDED;
     }
 
     if (canceled_) {
-      return mbf_msgs::ExePathResult::CANCELED;
+      return mbf_msgs::RecoveryResult::CANCELED;
     }
 
     cmd_vel_pub_.publish(twist);
@@ -144,26 +144,26 @@ uint32_t MoveBackRecoveryCostmap::moveBack() {
             ROS_ERROR("=====>REJECTING RECOVERY MOTION: BLOCKED_PATH\n "
                       "\tCheckPose state: %d ",
                       check_pose_srv.response.state);
-            return mbf_msgs::ExePathResult::BLOCKED_PATH;
+            return mbf_msgs::RecoveryResult::IMPASSABLE;
           } else {
             ROS_ERROR(
                 "REJECTING RECOVERY MOTION: MAP_ERROR\n \tCheckPose state: %d. "
                 "\nPlease consider to check CHECKPOSE_MVBACK_DIST and "
                 "CHECKPOSE_MVBACK_LOOKAHEAD params too",
                 check_pose_srv.response.state);
-            return mbf_msgs::ExePathResult::MAP_ERROR;
+            return mbf_msgs::RecoveryResult::TF_ERROR;
           }
         } else {
           ROS_INFO("PREEMPTING RECOVERY MOTION PREMATURELY:\n \tCheckPose "
                    "state: %d ",
                    check_pose_srv.response.state);
-          return mbf_msgs::ExePathResult::SUCCESS;
+          return mbf_msgs::RecoveryResult::SUCCESS;
         }
       } else {
         ROS_INFO("PREEMPTING RECOVERY MOTION PREMATURELY:\n \tPoint Cost: %f "
                  "\n \tMoving to higher costs: %d",
                  cost, cost - prev_cost > 0);
-        return mbf_msgs::ExePathResult::SUCCESS;
+        return mbf_msgs::RecoveryResult::SUCCESS;
       }
     }
     prev_cost = cost;
@@ -194,20 +194,20 @@ uint32_t MoveBackRecoveryCostmap::moveBack() {
             ROS_ERROR("REJECTING RECOVERY MOTION: BLOCKED_PATH\n \tCheckPose "
                       "state: %d ",
                       check_pose_srv.response.state);
-            return mbf_msgs::ExePathResult::BLOCKED_PATH;
+            return mbf_msgs::RecoveryResult::IMPASSABLE;
           } else {
             ROS_ERROR(
                 "REJECTING RECOVERY MOTION: MAP_ERROR\n \tCheckPose state: %d. "
                 "\nPlease consider to check CHECKPOSE_MVBACK_DIST and "
                 "CHECKPOSE_MVBACK_LOOKAHEAD params too",
                 check_pose_srv.response.state);
-            return mbf_msgs::ExePathResult::MAP_ERROR;
+            return mbf_msgs::RecoveryResult::TF_ERROR;
           }
         } else {
           ROS_INFO("PREEMPTING RECOVERY MOTION PREMATURELY:\n \tCheckPose "
                    "state: %d ",
                    check_pose_srv.response.state);
-          return mbf_msgs::ExePathResult::SUCCESS;
+          return mbf_msgs::RecoveryResult::SUCCESS;
         }
       } else {
         if (check_pose_srv.response.state == check_pose_srv.response.UNKNOWN ||
@@ -216,7 +216,7 @@ uint32_t MoveBackRecoveryCostmap::moveBack() {
                     "%d. \nPlease consider to check CHECKPOSE_MVBACK_DIST and "
                     "CHECKPOSE_MVBACK_LOOKAHEAD params too",
                     check_pose_srv.response.state);
-          return mbf_msgs::ExePathResult::MAP_ERROR;
+          return mbf_msgs::RecoveryResult::TF_ERROR;
         }
       }
     }
@@ -224,7 +224,7 @@ uint32_t MoveBackRecoveryCostmap::moveBack() {
     ros::spinOnce();
     r.sleep();
   }
-  return mbf_msgs::ExePathResult::SUCCESS;
+  return mbf_msgs::RecoveryResult::SUCCESS;
 }
 
 uint32_t MoveBackRecoveryCostmap::publishStop() const {
@@ -232,11 +232,11 @@ uint32_t MoveBackRecoveryCostmap::publishStop() const {
   for (double t = 0; t < 1.0; t += 1 / controller_frequency_) {
     cmd_vel_pub_.publish(zero_twist_);
     if (canceled_) {
-      return mbf_msgs::ExePathResult::CANCELED;
+      return mbf_msgs::RecoveryResult::CANCELED;
     }
     r.sleep();
   }
-  return mbf_msgs::ExePathResult::SUCCESS;
+  return mbf_msgs::RecoveryResult::SUCCESS;
 }
 
 double
