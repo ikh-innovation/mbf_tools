@@ -1,0 +1,14 @@
+name: Package Release Validation
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Package Release Validation
+    uses: ikh-innovation/.github/.github/workflows/ros1-package-release.yml@main
