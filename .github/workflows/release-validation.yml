@@ -1,14 +1,105 @@
-name: Package Release Validation
+name: ROS1 Package Release Validation
 
 on:
-  pull_request:
-    branches:
-      - master
+    pull_request:
+        branches:
+            - master
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  validate:
-    name: Package Release Validation
-    uses: ikh-innovation/.github/.github/workflows/ros1-package-release.yml@main
+    validate:
+        name: ROS1 Package Release Validation
+        runs-on: ubuntu-24.04
+        timeout-minutes: 5
+
+        steps:
+            - name: Checkout package repository
+              uses: actions/checkout@v4
+
+            - name: Validate ROS package metadata
+              shell: bash
+              run: |
+                  set -euo pipefail
+
+                  python3 - <<'PY'
+                  from pathlib import Path
+                  import xml.etree.ElementTree as ET
+
+                  packages = [
+                      p for p in Path(".").rglob("package.xml")
+                      if ".git" not in p.parts
+                  ]
+
+                  if not packages:
+                      raise SystemExit("ERROR: No package.xml found")
+
+                  names = set()
+
+                  for package in packages:
+                      root = ET.parse(package).getroot()
+
+                      if root.tag != "package":
+                          raise SystemExit(f"{package}: invalid ROS package XML")
+
+                      for field in (
+                          "name",
+                          "version",
+                          "description",
+                          "maintainer",
+                          "license",
+                      ):
+                          element = root.find(field)
+
+                          if element is None or not (element.text or "").strip():
+                              raise SystemExit(
+                                  f"{package}: missing or empty {field}"
+                              )
+
+                      name = root.findtext("name").strip()
+
+                      if name in names:
+                          raise SystemExit(
+                              f"Duplicate ROS package name: {name}"
+                          )
+
+                      names.add(name)
+
+                      print(f"PASS: {name} ({package})")
+
+                  print(f"Validated {len(packages)} ROS packages")
+                  PY
+
+            - name: Validate release branch and changelog
+              shell: bash
+              env:
+                  EVENT_NAME: ${{ github.event_name }}
+                  HEAD_REF: ${{ github.head_ref }}
+              run: |
+                  set -euo pipefail
+
+                  if [[ "$EVENT_NAME" != "pull_request" ]]; then
+                    echo "Not a pull request; skipping release-specific checks."
+                    exit 0
+                  fi
+
+                  if [[ ! "$HEAD_REF" =~ ^release/(v[0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+                    echo "Not a release branch; skipping release-specific checks."
+                    exit 0
+                  fi
+
+                  VERSION="${BASH_REMATCH[1]}"
+
+                  if [[ ! -f CHANGELOG.md ]]; then
+                    echo "::error::Missing CHANGELOG.md"
+                    exit 1
+                  fi
+
+                  if ! grep -qF "## [${VERSION}]" CHANGELOG.md; then
+                    echo "::error::Missing CHANGELOG entry for ${VERSION}"
+                    exit 1
+                  fi
+
+                  echo "PASS: Release branch ${HEAD_REF}"
+                  echo "PASS: CHANGELOG.md contains ${VERSION}"
